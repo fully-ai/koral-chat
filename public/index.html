@@ -39,8 +39,15 @@
     <main class="chat-area">
       <header class="chat-header">
         <span id="active-channel-name">#general</span>
-        <span id="current-user-badge" class="badge"></span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="admin-panel-btn" class="btn btn-ghost btn-sm hidden">Admin</button>
+          <span id="current-user-badge" class="badge"></span>
+        </div>
       </header>
+      <section id="admin-drawer" class="hidden" style="padding:12px 18px;border-bottom:1px solid #30363d;background:#161b22;">
+        <strong>User Moderation</strong>
+        <div id="admin-users-list" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"></div>
+      </section>
       <section id="message-feed" class="message-feed"></section>
       <footer class="composer">
         <label class="btn btn-ghost btn-sm">

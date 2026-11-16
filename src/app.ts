@@ -30,6 +30,22 @@ export function createKoralServer(config: KoralConfig): KoralServer {
 
   app.use(helmet({ contentSecurityPolicy: false }));
   app.use(express.json({ limit: "256kb" }));
+  app.use((req, res, next) => {
+    const start = Date.now();
+    res.on("finish", () => {
+      const log = {
+        ts: new Date().toISOString(),
+        method: req.method,
+        path: req.path,
+        status: res.statusCode,
+        duration_ms: Date.now() - start,
+      };
+      if (process.env.KORAL_LOG_REQUESTS !== "false") {
+        console.log(JSON.stringify(log));
+      }
+    });
+    next();
+  });
   app.use(
     rateLimit({
       windowMs: 60_000,

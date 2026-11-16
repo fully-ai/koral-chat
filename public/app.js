@@ -42,9 +42,38 @@ async function enterApp() {
   $("auth-screen").classList.add("hidden");
   $("app-screen").classList.remove("hidden");
   $("current-user-badge").textContent = `${currentUser.username} (${currentUser.role})`;
+  if (currentUser.role === "admin") {
+    $("admin-panel-btn").classList.remove("hidden");
+  }
   await loadChannels();
   await loadMessages(activeChannel);
   connectWebSocket();
+}
+
+$("admin-panel-btn").onclick = async () => {
+  const drawer = $("admin-drawer");
+  drawer.classList.toggle("hidden");
+  if (!drawer.classList.contains("hidden")) await loadAdminUsers();
+};
+
+async function loadAdminUsers() {
+  const { users } = await api("/api/admin/users");
+  const box = $("admin-users-list");
+  box.innerHTML = "";
+  for (const u of users) {
+    const btn = document.createElement("button");
+    btn.className = "btn btn-ghost btn-sm";
+    btn.textContent = `${u.username} (${u.is_muted ? "unmute" : "mute"})`;
+    btn.onclick = async () => {
+      await api(`/api/admin/users/${u.id}/mute`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ muted: !u.is_muted }),
+      });
+      await loadAdminUsers();
+    };
+    box.appendChild(btn);
+  }
 }
 
 function connectWebSocket() {
@@ -58,6 +87,9 @@ function connectWebSocket() {
       renderOnline(payload.onlineUsers);
     } else if (payload.type === "channel_created") {
       loadChannels();
+    } else if (payload.type === "message_deleted") {
+      const row = document.querySelector(`[data-msg-id="${payload.messageId}"]`);
+      if (row) row.remove();
     }
   };
 }
@@ -92,12 +124,21 @@ async function loadMessages(channelId) {
 function appendMessage(m) {
   const div = document.createElement("div");
   div.className = "msg-row";
+  div.dataset.msgId = m.id;
   const meta = document.createElement("div");
   meta.className = "msg-meta";
   meta.textContent = `${m.username} • ${new Date(m.created_at).toLocaleTimeString()}`;
   const body = document.createElement("div");
   body.textContent = m.content;
   div.append(meta, body);
+  if (currentUser && currentUser.role === "admin") {
+    const del = document.createElement("button");
+    del.className = "btn btn-ghost btn-sm";
+    del.textContent = "Delete";
+    del.style.marginTop = "6px";
+    del.onclick = () => api(`/api/admin/messages/${m.id}`, { method: "DELETE" });
+    div.appendChild(del);
+  }
   if (m.attachment_id) {
     const link = document.createElement("a");
     link.href = `/api/files/${m.attachment_id}`;

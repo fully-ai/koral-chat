@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0] - 2026-11-16
+
+### Added
+- Structured JSON HTTP request logging middleware.
+- Admin moderation controls (mute/unmute user drawer and message delete buttons) in the web UI.
+- Expanded integration tests for channel creation and admin message deletion.
+- Full 19-section README with Mermaid architecture diagram and API table.
+
 ## [0.1.0] - 2026-11-16
 
 ### Added

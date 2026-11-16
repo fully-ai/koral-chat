@@ -139,13 +139,27 @@ test("registration, login, WebSocket messaging, file sharing, and admin moderati
   const errPayload = await muteErr;
   assert.match(errPayload.error, /muted/i);
 
-  // 6. Audit log recorded
+  // 6. Channel creation & admin message deletion
+  const chRes = await fetch(`${baseUrl}/api/channels`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${adminData.token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ name: "devops", description: "Infra alerts" }),
+  });
+  assert.equal(chRes.status, 201);
+
+  const delMsg = await fetch(`${baseUrl}/api/admin/messages/${received.message.id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${adminData.token}` },
+  });
+  assert.equal(delMsg.status, 200);
+
+  // 7. Audit log recorded mute + delete
   const auditRes = await fetch(`${baseUrl}/api/admin/audit`, {
     headers: { Authorization: `Bearer ${adminData.token}` },
   });
   const audit = await auditRes.json();
-  assert.equal(audit.logs.length, 1);
-  assert.equal(audit.logs[0].action, "mute_user");
+  assert.equal(audit.logs.length, 2);
+  assert.equal(audit.logs[0].action, "delete_message");
 
   wsAlice.close();
   wsBob.close();
