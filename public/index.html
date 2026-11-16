@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Koral Chat</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div id="auth-screen" class="auth-screen">
+    <div class="auth-card">
+      <h1>Koral Chat</h1>
+      <p class="muted">Self-hosted real-time team messaging</p>
+      <input id="auth-username" type="text" placeholder="Username (3-32 chars)" />
+      <input id="auth-password" type="password" placeholder="Password (min 8 chars)" />
+      <div class="auth-actions">
+        <button id="login-btn" class="btn btn-primary">Sign In</button>
+        <button id="register-btn" class="btn btn-ghost">Register</button>
+      </div>
+      <div id="auth-error" class="error-text"></div>
+    </div>
+  </div>
+
+  <div id="app-screen" class="app-layout hidden">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <strong>Koral Chat</strong>
+        <button id="logout-btn" class="btn btn-ghost btn-sm">Sign Out</button>
+      </div>
+      <div class="section-title">
+        <span>Channels</span>
+        <button id="add-channel-btn" class="btn btn-ghost btn-sm">+</button>
+      </div>
+      <ul id="channel-list" class="nav-list"></ul>
+      <div class="section-title">Online Users</div>
+      <ul id="online-list" class="nav-list"></ul>
+    </aside>
+
+    <main class="chat-area">
+      <header class="chat-header">
+        <span id="active-channel-name">#general</span>
+        <span id="current-user-badge" class="badge"></span>
+      </header>
+      <section id="message-feed" class="message-feed"></section>
+      <footer class="composer">
+        <label class="btn btn-ghost btn-sm">
+          Attach
+          <input id="file-upload" type="file" hidden />
+        </label>
+        <input id="msg-input" type="text" placeholder="Write a message..." />
+        <button id="send-btn" class="btn btn-primary">Send</button>
+      </footer>
+    </main>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
